@@ -82,8 +82,11 @@ usertrap(void)
     kexit(-1);
 
   // give up the CPU if this is a timer interrupt.
-  if (which_dev == 2)
+  if (which_dev == 2){
+    // Increase cputime field, time slice has been used up
+    p->cputime++;
     yield();
+  }
 
   prepare_return();
 
@@ -154,8 +157,13 @@ kerneltrap()
   }
 
   // give up the CPU if this is a timer interrupt.
-  if (which_dev == 2 && myproc() != 0)
+  if (which_dev == 2 && myproc() != 0){
+    // Gather the process information and update cputime field
+    struct proc *p = myproc();
+    p->cputime++;
+
     yield();
+  }
 
   // the yield() may have caused some traps to occur,
   // so restore trap registers for use by kernelvec.S's sepc instruction.
