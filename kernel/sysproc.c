@@ -110,3 +110,16 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+// wait2, provides status and rusage 
+uint64
+sys_wait2(void)
+{
+  uint64 status_address;
+  argaddr(0, &status_address);
+
+  uint64 rusage_address;
+  argaddr(1, &rusage_address);
+
+  return kwait2(status_address, rusage_address);
+}
