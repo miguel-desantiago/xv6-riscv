@@ -1,6 +1,11 @@
+#ifndef PSTAT_H
+#define PSTAT_H
+
 struct rusage{
     uint cputime;
 };
+
+enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
 struct pstat{
     int pid; // Process ID
@@ -9,3 +14,5 @@ struct pstat{
     int ppid; // Parent process ID
     char name[16]; // Parent command name
 };
+
+#endif

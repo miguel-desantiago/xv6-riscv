@@ -2,6 +2,7 @@
 
 struct stat;
 struct rusage;
+struct pstat;
 
 // system calls
 int fork(void);

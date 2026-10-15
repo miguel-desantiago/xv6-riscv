@@ -767,15 +767,50 @@ int kgetprocs(uint64 user_pstat_addr){
    int counter = 0;
    struct proc *p;
 
+   struct pstat status;
+
+   acquire(&wait_lock);
    for (p = proc; p < &proc[NPROC]; p++) {
      acquire(&p->lock);
+
      if (p->state == UNUSED){
        release(&p->lock);
        continue;
       }
+
+      // Set PID
+      status.pid = p->pid;
+
+      // Set Process State
+      status.state = p->state;
+
+      // Set Size of Process Memory (bytes)
+      status.size = p->sz;
+
+      // Set Parent PID
+      if (p->parent == 0)
+        status.ppid = 0;
+      else
+        status.ppid = p->parent->pid;
+
+      // Set Parent Command Name
+      safestrcpy(status.name, p->name, sizeof(status.name));
+
+      if (copyout(myproc()->pagetable,
+		 myproc()->sz,
+		 user_pstat_addr + (counter * sizeof(struct pstat)),
+		 (char *)&status,
+                 sizeof(struct pstat)) == -1) {
+
+         release(&p->lock);
+         release(&wait_lock);
+         return -1;
+      }
+
       counter += 1;
       release(&p->lock);
    }
+   release(&wait_lock);
    return counter;
 }
 
