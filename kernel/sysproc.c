@@ -123,3 +123,12 @@ sys_wait2(void)
 
   return kwait2(status_address, rusage_address);
 }
+
+// getprocs, provides number of processes
+uint64
+sys_getprocs(void)
+{
+  uint64 user_pstat_address;
+  argaddr(0, &user_pstat_address);
+  return kgetprocs(user_pstat_address);
+}

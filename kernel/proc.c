@@ -762,3 +762,21 @@ kwait2(uint64 status_addr, uint64 rusage_addr)
     acquire(&wait_lock);
   }
 }
+
+int kgetprocs(uint64 user_pstat_addr){
+   int counter = 0;
+   struct proc *p;
+
+   for (p = proc; p < &proc[NPROC]; p++) {
+     acquire(&p->lock);
+     if (p->state == UNUSED){
+       release(&p->lock);
+       continue;
+      }
+      counter += 1;
+      release(&p->lock);
+   }
+   return counter;
+}
+
+
