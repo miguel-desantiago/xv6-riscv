@@ -105,4 +105,7 @@ struct proc {
   // Tracking time when process uses up its timeslice
   uint64 cputime;
 
+  // New Priority Field - PA2
+  int priority;
+
 };

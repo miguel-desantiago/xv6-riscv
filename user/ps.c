@@ -21,13 +21,13 @@ main(int argc, char **argv)
   if (nprocs < 0)
     exit(-1);
 
-  printf("pid\tstate\t\tsize\tppid\tname\n");
+  printf("pid\tstate\t\tsize\tppid\tname\tpriority\n");
   for (i=0; i<nprocs; i++) {
     state = states[uproc[i].state];
     // Changed %l to %lu: otherwise it fails when doing 'make qemu' as xv6 expects
     // something after a singular 'l' xv6's printf
-    printf("%d\t%s\t%lu\t%d\t%s\n", uproc[i].pid, state,
-                   uproc[i].size, uproc[i].ppid, uproc[i].name);
+    printf("%d\t%s\t%lu\t%d\t%s\t%d\n", uproc[i].pid, state,
+                   uproc[i].size, uproc[i].ppid, uproc[i].name, uproc[i].priority);
   }
 
   exit(0);

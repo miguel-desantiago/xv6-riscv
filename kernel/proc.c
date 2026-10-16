@@ -231,6 +231,9 @@ userinit(void)
 
   p->state = RUNNABLE;
 
+  // New Addition for Priority
+  p->priority = 0;
+
   release(&p->lock);
 }
 
@@ -292,6 +295,9 @@ kfork(void)
   np->cwd = idup(p->cwd);
 
   safestrcpy(np->name, p->name, sizeof(p->name));
+
+  // Set Child Priority Equal to Parent
+  np->priority = p->priority;
 
   pid = np->pid;
 
@@ -795,6 +801,9 @@ int kgetprocs(uint64 user_pstat_addr){
 
       // Set Parent Command Name
       safestrcpy(status.name, p->name, sizeof(status.name));
+
+      // Set Priority
+      status.priority = p->priority;
 
       if (copyout(myproc()->pagetable,
 		 myproc()->sz,
