@@ -459,6 +459,7 @@ scheduler(void)
     intr_off();
 
     int found = 0;
+    #if SCHEDULER == ROUND_ROBIN
     for (p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
       if (p->state == RUNNABLE) {
@@ -479,6 +480,47 @@ scheduler(void)
       }
       release(&p->lock);
     }
+
+    #elif SCHEDULER == PRIORITY
+
+    // Hold information for highest priority process
+    struct proc *highest_priority_proc = 0;
+    int max_priority_found = -1;
+
+    for (p = proc; p < &proc[NPROC]; p++) {
+       acquire(&p->lock);
+       if (p->state == RUNNABLE) {
+        if (p->priority > max_priority_found){
+          max_priority_found = p->priority;
+          highest_priority_proc = p;
+        }
+       }
+       release(&p->lock);
+    }
+
+    if (highest_priority_proc != 0){
+       acquire(&highest_priority_proc->lock);
+       // Switch to chosen process.  It is the process's job
+       // to release its lock and then reacquire it
+       // before jumping back to us.
+       if (highest_priority_proc->state == RUNNABLE){
+
+       	  highest_priority_proc->state = RUNNING;
+          c->proc = highest_priority_proc;
+          swtch(&c->context, &highest_priority_proc->context);
+
+          // Don't re-enable interrupts on release.
+          mycpu()->intena = 0;
+
+          // Process is done running for now.
+          // It should have changed its p->state before coming back.
+          c->proc = 0;
+          found = 1;
+       }
+       release(&highest_priority_proc->lock);
+    }
+    #endif
+
     if (found == 0) {
       // nothing to run; stop running on this core until an interrupt.
       asm volatile("wfi");

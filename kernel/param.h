@@ -12,3 +12,8 @@
 #define FSSIZE      2000              // size of file system in blocks
 #define MAXPATH     128               // maximum file path name
 #define USERSTACK   1                 // user stack pages
+#define ROUND_ROBIN 1 		      // round_robin scheduling
+#define PRIORITY    2                 // priority scheduling
+#define SCHEDULER   PRIORITY          // select scheduler choice
+#define AGING 	    0 		      // 0 = aging off, 1 = aging on
+#define MAXEFFPRIORITY 99             // max priority possible

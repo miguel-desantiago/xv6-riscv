@@ -157,6 +157,8 @@ UPROGS=\
 	$U/_time\
 	$U/_ps\
 	$U/_testpriority\
+	$U/_pexec\
+	$U/_schedulertest\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
