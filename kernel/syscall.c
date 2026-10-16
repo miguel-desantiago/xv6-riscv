@@ -105,6 +105,8 @@ extern uint64 sys_close(void);
 extern uint64 sys_sync(void);
 extern uint64 sys_wait2(void);
 extern uint64 sys_getprocs(void);
+extern uint64 sys_setpriority(void);
+extern uint64 sys_getpriority(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -134,6 +136,8 @@ static uint64 (*syscalls[])(void) = {
   [SYS_sync]    = sys_sync,
   [SYS_wait2]   = sys_wait2,
   [SYS_getprocs] = sys_getprocs,
+  [SYS_setpriority] = sys_setpriority,
+  [SYS_getpriority] = sys_getpriority,
   // clang-format on
 };
 

@@ -108,4 +108,7 @@ struct proc {
   // New Priority Field - PA2
   int priority;
 
+  // New ReadyTime Field - PA2
+  uint readytime;
+
 };

@@ -132,3 +132,27 @@ sys_getprocs(void)
   argaddr(0, &user_pstat_address);
   return kgetprocs(user_pstat_address);
 }
+
+// get priority, provides process priority
+uint64
+sys_getpriority(void)
+{
+   return myproc()->priority;
+}
+
+// set priority, changes process priority
+uint64
+sys_setpriority(void)
+{
+  int priority;
+  argint(0, &priority);
+
+  if (priority < 0 || priority > 49)
+    return -1;
+
+  acquire(&myproc()->lock);
+  myproc()->priority = priority;
+  release(&myproc()->lock);
+
+  return 0;
+}

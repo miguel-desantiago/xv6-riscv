@@ -21,6 +21,8 @@ static void freeproc(struct proc *p);
 
 extern char trampoline[]; // trampoline.S
 
+extern uint ticks; // Need ticks for readytime field - PA2
+
 // helps ensure that wakeups of wait()ing
 // parents are not lost. helps obey the
 // memory model when using p->parent.
@@ -129,6 +131,9 @@ found:
   // Set initial cputime to 0
   p->cputime = 0;
 
+  // Set priority to 0
+  p->priority = 0;
+
   // Allocate a trapframe page.
   if ((p->trapframe = (struct trapframe *)kalloc()) == 0) {
     freeproc(p);
@@ -230,6 +235,7 @@ userinit(void)
   p->cwd = namei("/");
 
   p->state = RUNNABLE;
+  p->readytime = ticks;
 
   // New Addition for Priority
   p->priority = 0;
@@ -309,6 +315,7 @@ kfork(void)
 
   acquire(&np->lock);
   np->state = RUNNABLE;
+  np->readytime = ticks;
   release(&np->lock);
 
   return pid;
@@ -513,6 +520,7 @@ yield(void)
   struct proc *p = myproc();
   acquire(&p->lock);
   p->state = RUNNABLE;
+  p->readytime = ticks;
   sched();
   release(&p->lock);
 }
@@ -599,6 +607,7 @@ wakeup(void *chan)
       // go to sleep, also set it back to RUNNING.
       if (p->state == SLEEPING) {
         p->state = RUNNABLE;
+        p->readytime = ticks;
       }
     }
     release(&p->lock);
@@ -620,6 +629,7 @@ kkill(int pid)
       if (p->state == SLEEPING) {
         // Wake process from sleep().
         p->state = RUNNABLE;
+	p->readytime = ticks;
       }
       release(&p->lock);
       return 0;
@@ -804,6 +814,9 @@ int kgetprocs(uint64 user_pstat_addr){
 
       // Set Priority
       status.priority = p->priority;
+
+      // Set readytime
+      status.readytime = p->readytime;
 
       if (copyout(myproc()->pagetable,
 		 myproc()->sz,
