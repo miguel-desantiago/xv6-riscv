@@ -482,7 +482,6 @@ scheduler(void)
     }
 
     #elif SCHEDULER == PRIORITY
-
     // Hold information for highest priority process
     struct proc *highest_priority_proc = 0;
     int max_priority_found = -1;
@@ -490,8 +489,16 @@ scheduler(void)
     for (p = proc; p < &proc[NPROC]; p++) {
        acquire(&p->lock);
        if (p->state == RUNNABLE) {
-        if (p->priority > max_priority_found){
-          max_priority_found = p->priority;
+	#if AGING == 1
+	int final_priority = p->priority + (ticks - p->readytime);
+	if (final_priority > MAXEFFPRIORITY){
+	   final_priority = MAXEFFPRIORITY;
+        }
+	#else
+	int final_priority = p->priority;
+	#endif
+        if (final_priority > max_priority_found){
+          max_priority_found = final_priority;
           highest_priority_proc = p;
         }
        }
